@@ -3,14 +3,13 @@ import json
 from kafka import KafkaProducer
 from flask import Flask, jsonify, request, g, Response
 
-from .services import retrieve_orders, create_order
 
 app = Flask(__name__)
 
 @app.before_request
 def before_request():
     # Set up a Kafka producer
-    TOPIC_NAME = 'items'
+    TOPIC_NAME = 'orders'
     KAFKA_SERVER = 'localhost:9092'
     producer = KafkaProducer(bootstrap_servers=KAFKA_SERVER)
     # Setting Kafka to g enables us to use this
@@ -25,6 +24,7 @@ def health():
 
 @app.route('/api/orders/computers', methods=['GET', 'POST'])
 def computers():
+    from services import retrieve_orders, create_order
     if request.method == 'GET':
         return jsonify(retrieve_orders())
     elif request.method == 'POST':
